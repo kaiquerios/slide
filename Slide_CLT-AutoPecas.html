@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<title>AutoPeças CRM — Contextualização do Sistema</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&amp;family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&amp;display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D1117;
+  --orange:#E85D04;--orange-lt:#FFF0E6;--orange-dk:#7A2E00;
+  --steel:#1B3A5C;--steel-lt:#E8F1FB;
+  --red:#B91C1C;--red-lt:#FEE2E2;
+  --amber:#B45309;--amber-lt:#FEF3C7;
+  --green:#065F46;--green-lt:#D1FAE5;
+  --green-v:#00875A;
+  --white:#FFFFFF;--muted:#6B7280;--light:#D1D5DB;
+  --card:#F8FAFC;--navy:#0D1B2A;
+  --accent:#F97316;
+}
+html,body{background:var(--bg);font-family:'DM Sans',sans-serif;height:100%;overflow:hidden}
+.shell{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:18px;padding:16px}
+.viewport{position:relative;width:1000px;max-width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:6px;box-shadow:0 28px 70px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.06)}
+.slide{position:absolute;inset:0;width:100%;height:100%;opacity:0;pointer-events:none;transition:opacity .4s ease}
+.slide.active{opacity:1;pointer-events:all}
+.controls{display:flex;align-items:center;gap:20px}
+.btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#D1D5DB;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:9px 22px;border-radius:40px;cursor:pointer;transition:all .2s}
+.btn:hover{background:rgba(255,255,255,.13);color:#fff}.btn:active{transform:scale(.97)}.btn:disabled{opacity:.3;cursor:default}
+.dots{display:flex;gap:8px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);cursor:pointer;transition:all .25s}
+.dot.active{background:var(--accent);transform:scale(1.4)}
+.counter{font-family:'Syne',sans-serif;font-size:12px;color:rgba(255,255,255,.3);letter-spacing:.08em;min-width:42px;text-align:center}
+.hint{font-size:11px;color:rgba(255,255,255,.18);letter-spacing:.04em}
+
+/* ── TOPBAR / BOTTOMBAR ─────────────── */
+.topbar{position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:center;padding:0 22px}
+.tb-rule{width:5px;height:100%;position:absolute;left:0;top:0}
+.tb-lbl{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:.22em;color:var(--light);text-transform:uppercase;margin-left:10px}
+.bbar{position:absolute;bottom:0;left:0;right:0;height:16px;display:flex;align-items:center;justify-content:space-between;padding:0 14px}
+.bbar span{font-size:7px;color:var(--muted)}
+
+/* ══════════════ S1 — COVER ══════════ */
+.s1{background:var(--navy)}
+.s1-accent{position:absolute;left:0;top:0;width:6px;height:100%;background:var(--orange)}
+/* gear motif */
+.s1-gear{position:absolute;right:48px;top:30px;width:170px;height:170px;opacity:.12}
+.s1-gear circle{fill:none;stroke:var(--orange);stroke-width:14}
+.s1-gear .teeth{fill:var(--orange)}
+.s1-gear2{position:absolute;right:20px;top:160px;width:100px;height:100px;opacity:.10}
+.s1-gear2 circle{fill:none;stroke:#F97316;stroke-width:10}
+.s1-gear2 .teeth{fill:#F97316}
+.s1-body{position:absolute;left:44px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center}
+.s1-eye{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.22em;color:#F97316;text-transform:uppercase;margin-bottom:14px}
+.s1-title{font-family:'Syne',sans-serif;font-size:66px;font-weight:800;color:var(--white);line-height:.95;margin-bottom:18px}
+.s1-title em{color:var(--accent);font-style:normal}
+.s1-sub{font-size:14px;font-weight:300;color:#93C5FD;line-height:1.5;max-width:420px;margin-bottom:26px}
+.s1-div{width:200px;height:2px;background:linear-gradient(90deg,var(--accent),transparent);margin-bottom:20px}
+.s1-pills{display:flex;gap:10px;flex-wrap:wrap}
+.s1-pill{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--accent);border:1px solid rgba(249,115,22,.35);padding:5px 14px;border-radius:40px;background:rgba(249,115,22,.08)}
+.s1-foot{position:absolute;bottom:14px;left:44px;font-size:9px;color:rgba(255,255,255,.2);letter-spacing:.05em}
+
+/* ══════════════ S2 — O NEGÓCIO ══════ */
+.s2{background:var(--white)}
+.s2 .topbar{background:var(--navy)}
+.s2 .tb-rule{background:var(--orange)}
+.s2-in{position:absolute;top:58px;left:22px;right:22px;bottom:20px;display:flex;flex-direction:column;gap:9px}
+.s2-h{font-family:'Syne',sans-serif;font-size:21px;font-weight:700;color:var(--navy);line-height:1.15}
+.s2-d{font-size:11px;color:var(--muted);line-height:1.5;max-width:580px}
+.s2-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.s2-stat{background:var(--steel-lt);border-radius:6px;border-top:3px solid var(--steel);padding:8px 12px;display:flex;flex-direction:column;align-items:center}
+.s2-stat.or{border-top-color:var(--orange)}.s2-stat.re{border-top-color:var(--red)}
+.s2-sv{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--steel);line-height:1}
+.s2-stat.or .s2-sv{color:var(--orange)}.s2-stat.re .s2-sv{color:var(--red)}
+.s2-ss{font-size:8.5px;color:var(--muted);text-align:center;line-height:1.4;margin-top:3px}
+.s2-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;flex:1}
+.s2-cat{background:var(--card);border-radius:6px;border:1px solid #E2E8F0;padding:8px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.s2-ci{font-size:22px;line-height:1}
+.s2-cn{font-family:'Syne',sans-serif;font-size:8.5px;font-weight:700;color:var(--navy);text-align:center;line-height:1.2}
+.s2-cd{font-size:8px;color:var(--muted);text-align:center;line-height:1.3}
+.s2 .bbar{background:var(--navy)}
+
+/* ══════════════ S3 — O SISTEMA ══════ */
+.s3{background:var(--navy)}
+.s3 .topbar{background:#1a2744}
+.s3 .tb-rule{background:var(--accent)}
+.s3-in{position:absolute;top:58px;left:22px;right:22px;bottom:20px;display:flex;flex-direction:column;gap:8px}
+.s3-h{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;color:var(--white);line-height:1.15}
+.s3-sub{font-size:11px;color:#93C5FD;line-height:1.4}
+.s3-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;flex:1}
+.s3-card{border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+.s3-ch{display:flex;align-items:center;gap:10px;padding:10px 14px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--white);letter-spacing:.08em}
+.s3-ch span{font-size:18px}
+.s3-card.fr .s3-ch{background:var(--orange)}
+.s3-card.bk .s3-ch{background:var(--steel)}
+.s3-card.db .s3-ch{background:#6D28D9}
+.s3-cb{flex:1;padding:8px 14px 10px;display:flex;flex-direction:column;gap:4px;border-radius:0 0 8px 8px}
+.s3-card.fr .s3-cb{background:#4A1A00;border:1px solid var(--orange);border-top:none}
+.s3-card.bk .s3-cb{background:#0A2040;border:1px solid var(--steel);border-top:none}
+.s3-card.db .s3-cb{background:#2E1065;border:1px solid #6D28D9;border-top:none}
+.s3-badge{background:var(--green-v);color:var(--white);font-family:'Syne',sans-serif;font-size:9px;font-weight:700;text-align:center;padding:4px 0;border-radius:4px;letter-spacing:.06em;margin-bottom:4px}
+.s3-it{font-size:10px;color:#CBD5E1;padding-left:10px;position:relative;line-height:1.4}
+.s3-it::before{content:'·';position:absolute;left:0;color:var(--accent)}
+.s3 .bbar{background:#1a2744}
+
+/* ══════════════ S4 — CLOUD ══════════ */
+.s4{background:var(--white)}
+.s4 .topbar{background:var(--navy)}
+.s4 .tb-rule{background:var(--accent)}
+.s4-in{position:absolute;top:58px;left:22px;right:22px;bottom:20px;display:flex;flex-direction:column;gap:8px}
+.s4-h{font-family:'Syne',sans-serif;font-size:21px;font-weight:700;color:var(--navy)}
+.s4-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;flex:1}
+.s4-item{background:var(--steel-lt);border-radius:7px;border:1px solid #BFDBFE;padding:10px 14px;display:flex;align-items:flex-start;gap:10px;position:relative;overflow:hidden}
+.s4-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
+.or::before{background:var(--orange)}.bl::before{background:var(--steel)}.pu::before{background:#7C3AED}.re::before{background:var(--red)}.am::before{background:var(--amber)}.gr::before{background:var(--green-v)}
+.s4-ico{font-size:22px;line-height:1;margin-left:4px;flex-shrink:0;margin-top:1px}
+.s4-ti{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.s4-de{font-size:9.5px;color:var(--muted);line-height:1.4}
+.s4 .bbar{background:var(--navy)}
+
+/* ══════════════ S5 — RISCOS ═════════ */
+.s5{background:var(--navy)}
+.s5 .topbar{background:var(--orange-dk)}
+.s5 .tb-rule{background:var(--accent)}
+.s5-in{position:absolute;top:58px;left:22px;right:22px;bottom:20px;display:flex;flex-direction:column;gap:8px}
+.s5-h{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--white)}
+.s5-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;flex:1}
+.s5-card{border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.s5-ch2{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.s5-ci{font-size:20px}
+.s5-ct{font-family:'Syne',sans-serif;font-size:12px;font-weight:700}
+.s5-card.da{background:#450A0A;border:1px solid #FCA5A5}
+.s5-card.wa{background:#451A03;border:1px solid #FED7AA}
+.s5-card.or2{background:#1C1003;border:1px solid #FDE68A}
+.s5-card.in{background:#0C1A2E;border:1px solid #93C5FD}
+.s5-card.da .s5-ct{color:#FCA5A5}
+.s5-card.wa .s5-ct{color:#FED7AA}
+.s5-card.or2 .s5-ct{color:#FDE68A}
+.s5-card.in .s5-ct{color:#93C5FD}
+.s5-it{font-size:10px;color:#CBD5E1;padding-left:12px;position:relative;line-height:1.5}
+.s5-it::before{content:'–';position:absolute;left:0;color:#64748B}
+.s5 .bbar{background:var(--orange-dk)}
+
+/* ══════════════ S6 — PRÓXIMOS ═══════ */
+.s6{background:var(--navy)}
+.s6-bar{position:absolute;left:0;top:0;width:5px;height:100%;background:var(--orange)}
+.s6-fbar{position:absolute;bottom:0;left:0;right:0;height:46px;background:#1a2744;display:flex;align-items:center;padding:0 22px}
+.s6-ft{font-size:9px;color:#93C5FD;letter-spacing:.04em}
+.s6-in{position:absolute;top:22px;left:44px;right:22px;bottom:58px;display:flex;flex-direction:column;gap:8px}
+.s6-h{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--white)}
+.s6-s{font-size:11px;color:#93C5FD;margin-bottom:4px}
+.s6-steps{display:flex;flex-direction:column;gap:7px;flex:1;justify-content:center}
+.s6-step{display:flex;align-items:center;background:#0D1B2A;border:1px solid #1E3A5F;border-radius:6px;overflow:hidden}
+.s6-num{background:var(--orange);color:var(--white);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;width:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;align-self:stretch}
+.s6-tx{padding:9px 14px}
+.s6-sttl{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--white);margin-bottom:3px}
+.s6-sd{font-size:10px;color:#94A3B8;line-height:1.4}
+
+/* animations */
+.slide.active .au{animation:su .45s ease forwards}
+.slide.active .au:nth-child(1){animation-delay:.04s;opacity:0}
+.slide.active .au:nth-child(2){animation-delay:.10s;opacity:0}
+.slide.active .au:nth-child(3){animation-delay:.16s;opacity:0}
+.slide.active .au:nth-child(4){animation-delay:.22s;opacity:0}
+.slide.active .au:nth-child(5){animation-delay:.28s;opacity:0}
+.slide.active .au:nth-child(6){animation-delay:.34s;opacity:0}
+@keyframes su{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="viewport" id="vp">
+<!-- S1 — COVER -->
+<div class="slide s1 active" id="s1">
+<div class="s1-accent"></div>
+<!-- Gear SVG motifs -->
+<svg class="s1-gear" viewbox="0 0 170 170" xmlns="http://www.w3.org/2000/svg">
+<circle cx="85" cy="85" r="55"></circle>
+<g class="teeth">
+<rect height="24" rx="3" width="14" x="78" y="8"></rect>
+<rect height="24" rx="3" width="14" x="78" y="138"></rect>
+<rect height="14" rx="3" width="24" x="8" y="78"></rect>
+<rect height="14" rx="3" width="24" x="138" y="78"></rect>
+<rect height="24" rx="3" transform="rotate(45 39 38)" width="14" x="32" y="26"></rect>
+<rect height="24" rx="3" transform="rotate(45 119 130)" width="14" x="112" y="118"></rect>
+<rect height="14" rx="3" transform="rotate(45 38 119)" width="24" x="26" y="112"></rect>
+<rect height="14" rx="3" transform="rotate(45 130 39)" width="24" x="118" y="32"></rect>
+</g>
+<circle cx="85" cy="85" fill="none" r="22" stroke-width="10"></circle>
+</svg>
+<svg class="s1-gear2" viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<circle cx="50" cy="50" r="30"></circle>
+<g class="teeth">
+<rect height="18" rx="3" width="12" x="44" y="5"></rect>
+<rect height="18" rx="3" width="12" x="44" y="77"></rect>
+<rect height="12" rx="3" width="18" x="5" y="44"></rect>
+<rect height="12" rx="3" width="18" x="77" y="44"></rect>
+<rect height="18" rx="3" transform="rotate(45 24 23)" width="12" x="18" y="14"></rect>
+<rect height="18" rx="3" transform="rotate(45 70 73)" width="12" x="64" y="64"></rect>
+</g>
+<circle cx="50" cy="50" fill="none" r="13" stroke-width="7"></circle>
+</svg>
+<div class="s1-body">
+<div class="s1-eye au">Segurança da Informação</div>
+<div style="font-size:12px;color:#93C5FD;margin-bottom:10px;font-weight:500;">CLT AutoPeças</div><div class="s1-title au"><em>Auto</em>Peças<br/>CRM</div>
+<div class="s1-sub au">Sistema de Gestão Comercial para<br/>Distribuidora de Peças Automotivas</div>
+<div class="s1-div au"></div>
+<div class="s1-pills au">
+<span class="s1-pill">Cloud Ready</span>
+<span class="s1-pill">LGPD</span>
+<span class="s1-pill">Peças Auto</span>
+<span class="s1-pill">B2B Sales</span>
+</div>
+<div style="font-size:11px;color:#D1D5DB;margin-top:20px;line-height:1.6;"><div>Alisson Rodrigo dos Santos Inacio</div><div>João Vitor Gama de Santana</div><div>Kaique Rios Novais</div><div>Kaio Andrade</div><div>Maria Eduarda</div></div></div>
+<div class="s1-foot">Contextualização do Cenário · Infraestrutura · Segurança</div>
+</div>
+<!-- S2 — O NEGÓCIO -->
+<div class="slide s2" id="s2">
+<div class="topbar"><div class="tb-rule"></div><span class="tb-lbl">O Negócio</span></div>
+<div class="s2-in">
+<div class="s2-h au">Distribuidora B2B de peças automotivas</div>
+<div class="s2-d au">O CRM gerencia o ciclo completo de vendas de peças para oficinas mecânicas, concessionárias e distribuidores regionais — do pedido à fatura.</div>
+<div class="s2-stats au">
+<div class="s2-stat or"><div class="s2-sv">B2B</div><div class="s2-ss">Oficinas, concessionárias<br/>e distribuidores</div></div>
+<div class="s2-stat"><div class="s2-sv">SKU+</div><div class="s2-ss">Catálogo extenso<br/>de peças e acessórios</div></div>
+<div class="s2-stat re"><div class="s2-sv">PII</div><div class="s2-ss">Dados de clientes<br/>e histórico de pedidos</div></div>
+</div>
+<div class="s2-cats au">
+<div class="s2-cat"><div class="s2-ci">🔧</div><div class="s2-cn">Motor e Câmbio</div><div class="s2-cd">Pistões, virabrequins, juntas</div></div>
+<div class="s2-cat"><div class="s2-ci">🛞</div><div class="s2-cn">Suspensão e Freios</div><div class="s2-cd">Amortecedores, discos, pastilhas</div></div>
+<div class="s2-cat"><div class="s2-ci">⚡</div><div class="s2-cn">Elétrica e Eletrônica</div><div class="s2-cd">Sensores, alternadores, módulos</div></div>
+<div class="s2-cat"><div class="s2-ci">🚗</div><div class="s2-cn">Carroceria e Acessórios</div><div class="s2-cd">Retrovisores, para-choques, vidros</div></div>
+</div>
+</div>
+<div class="bbar"><span>AutoPeças CRM — Contextualização do Sistema</span><span>2 / 6</span></div>
+</div>
+<!-- S3 — O SISTEMA -->
+<div class="slide s3" id="s3">
+<div class="topbar"><div class="tb-rule"></div><span class="tb-lbl">O Sistema</span></div>
+<div class="s3-in">
+<div class="s3-h au">Stack do AutoPeças CRM — já desenvolvido e pronto para cloud</div>
+<div class="s3-sub au">O backend, frontend e banco de dados estão finalizados. O projeto atual envolve a subida e segurança da infraestrutura cloud.</div>
+<div class="s3-cards au">
+<div class="s3-card fr">
+<div class="s3-ch"><span>🖥️</span> FRONTEND</div>
+<div class="s3-cb">
+<div class="s3-badge">✓  PRONTO</div>
+<div class="s3-it">Portal de vendas (SPA)</div>
+<div class="s3-it">App para vendedores externos</div>
+<div class="s3-it">Consulta de catálogo e estoque</div>
+<div class="s3-it">Dashboard de pedidos e metas</div>
+</div>
+</div>
+<div class="s3-card bk">
+<div class="s3-ch"><span>⚙️</span> BACKEND</div>
+<div class="s3-cb">
+<div class="s3-badge">✓  PRONTO</div>
+<div class="s3-it">API REST para pedidos e clientes</div>
+<div class="s3-it">Motor de busca de peças (SKU)</div>
+<div class="s3-it">Pipeline e funil de vendas</div>
+<div class="s3-it">Integrações ERP e NF-e</div>
+</div>
+</div>
+<div class="s3-card db">
+<div class="s3-ch"><span>🗄️</span> BANCO DE DADOS</div>
+<div class="s3-cb">
+<div class="s3-badge">✓  PRONTO</div>
+<div class="s3-it">Cadastro de clientes (PII)</div>
+<div class="s3-it">Catálogo de peças e preços</div>
+<div class="s3-it">Histórico de pedidos</div>
+<div class="s3-it">Logs de auditoria</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bbar"><span>AutoPeças CRM — Contextualização do Sistema</span><span>3 / 6</span></div>
+</div>
+<!-- S4 — CLOUD -->
+<div class="slide s4" id="s4">
+<div class="topbar"><div class="tb-rule"></div><span class="tb-lbl">Ambiente Cloud</span></div>
+<div class="s4-in">
+<div class="s4-h au">Para onde o sistema será migrado</div>
+<div class="s4-grid">
+<div class="s4-item or au"><div class="s4-ico">☁️</div><div><div class="s4-ti">Nuvem Pública (IaaS/PaaS)</div><div class="s4-de">AWS · Azure · GCP — multi-zona de disponibilidade</div></div></div>
+<div class="s4-item bl au"><div class="s4-ico">🌐</div><div><div class="s4-ti">CDN + WAF</div><div class="s4-de">Proteção DDoS, OWASP Top 10, TLS 1.3</div></div></div>
+<div class="s4-item pu au"><div class="s4-ico">🔑</div><div><div class="s4-ti">IAM + MFA + SSO</div><div class="s4-de">Controle de acesso por perfil: vendedor, gerente, admin</div></div></div>
+<div class="s4-item re au"><div class="s4-ico">🗄️</div><div><div class="s4-ti">Banco Gerenciado (RDS)</div><div class="s4-de">Alta disponibilidade, backups automáticos, WORM</div></div></div>
+<div class="s4-item am au"><div class="s4-ico">📡</div><div><div class="s4-ti">SIEM + Monitoramento</div><div class="s4-de">Logs centralizados, alertas em tempo real, SOC</div></div></div>
+<div class="s4-item gr au"><div class="s4-ico">🔄</div><div><div class="s4-ti">Disaster Recovery</div><div class="s4-de">Região secundária, RTO 4h, RPO 1h</div></div></div>
+</div>
+</div>
+<div class="bbar"><span>AutoPeças CRM — Contextualização do Sistema</span><span>4 / 6</span></div>
+</div>
+<!-- S5 — RISCOS -->
+<div class="slide s5" id="s5">
+<div class="topbar"><div class="tb-rule"></div><span class="tb-lbl" style="color:#FED7AA">Por que Segurança é Crítica</span></div>
+<div class="s5-in">
+<div class="s5-h au">Distribuidoras automotivas: alvo crescente de ataques B2B</div>
+<div class="s5-grid">
+<div class="s5-card da au">
+<div class="s5-ch2"><span class="s5-ci">🗂️</span><span class="s5-ct">Dados Sensíveis</span></div>
+<div class="s5-it">Cadastro de clientes B2B (CNPJ, contratos, preços)</div>
+<div class="s5-it">Histórico completo de pedidos e faturamento</div>
+<div class="s5-it">Tabelas de preços e margens comerciais</div>
+</div>
+<div class="s5-card wa au">
+<div class="s5-ch2"><span class="s5-ci">⚖️</span><span class="s5-ct">Obrigações Legais</span></div>
+<div class="s5-it">LGPD — notificação em 72h à ANPD</div>
+<div class="s5-it">Multa de até 2% do faturamento anual</div>
+<div class="s5-it">Responsabilidade civil com clientes afetados</div>
+</div>
+<div class="s5-card or2 au">
+<div class="s5-ch2"><span class="s5-ci">💼</span><span class="s5-ct">Impacto Operacional</span></div>
+<div class="s5-it">CRM parado = pedidos paralisados e faturamento zero</div>
+<div class="s5-it">Catálogo indisponível afeta toda a equipe de vendas</div>
+<div class="s5-it">Perda de clientes para concorrentes durante incidente</div>
+</div>
+<div class="s5-card in au">
+<div class="s5-ch2"><span class="s5-ci">🎯</span><span class="s5-ct">Ameaças Mapeadas</span></div>
+<div class="s5-it">Ransomware · SQL Injection no catálogo</div>
+<div class="s5-it">Phishing em vendedores externos (fora da rede)</div>
+<div class="s5-it">Insider threat: ex-vendedor com acesso a clientes</div>
+</div>
+</div>
+</div>
+<div class="bbar"><span>AutoPeças CRM — Contextualização do Sistema</span><span>5 / 6</span></div>
+</div>
+<!-- S6 — PRÓXIMOS PASSOS -->
+<div class="slide s6" id="s6">
+<div class="s6-bar"></div>
+<div class="s6-fbar"><span class="s6-ft">AutoPeças CRM · Contextualização do Sistema · Uso Restrito · 6 / 6</span></div>
+<div class="s6-in">
+<div class="s6-h au">Escopo do Projeto de Segurança</div>
+<div class="s6-s au">Com o sistema CRM pronto, o foco agora é a infraestrutura cloud segura:</div>
+<div class="s6-steps">
+<div class="s6-step au"><div class="s6-num">01</div><div class="s6-tx"><div class="s6-sttl">Deploy em Cloud Segura</div><div class="s6-sd">Subida do back, front e banco com segmentação de rede, controles de acesso e WAF configurado.</div></div></div>
+<div class="s6-step au"><div class="s6-num">02</div><div class="s6-tx"><div class="s6-sttl">Análise de Riscos</div><div class="s6-sd">Mapeamento de ameaças específicas para o setor automotivo B2B e perfil de vendedores externos.</div></div></div>
+<div class="s6-step au"><div class="s6-num">03</div><div class="s6-tx"><div class="s6-sttl">Plano de Continuidade (BCP)</div><div class="s6-sd">Estratégias de prevenção, resposta a incidentes e recuperação com RTO/RPO definidos.</div></div></div>
+<div class="s6-step au"><div class="s6-num">04</div><div class="s6-tx"><div class="s6-sttl">Arquitetura de Rede</div><div class="s6-sd">Infraestrutura com WAF, segmentação, SIEM, backups WORM e compliance LGPD.</div></div></div>
+</div>
+</div>
+</div>
+</div><!-- /viewport -->
+<div class="controls">
+<button class="btn" disabled="" id="prev">← Anterior</button>
+<div class="dots" id="dots"></div>
+<span class="counter" id="ctr">1 / 6</span>
+<button class="btn" id="next">Próximo →</button>
+</div>
+<div class="hint">← → para navegar · clique nos pontos para ir direto</div>
+</div>
+<script>
+const N=6; let cur=1;
+const ctr=document.getElementById('ctr');
+const prev=document.getElementById('prev');
+const next=document.getElementById('next');
+const dotsEl=document.getElementById('dots');
+for(let i=1;i<=N;i++){const d=document.createElement('div');d.className='dot'+(i===1?' active':'');d.onclick=()=>go(i);dotsEl.appendChild(d);}
+function go(n){
+  if(n<1||n>N)return;
+  document.getElementById('s'+cur).classList.remove('active');
+  dotsEl.children[cur-1].classList.remove('active');
+  cur=n;
+  const sl=document.getElementById('s'+cur);
+  sl.classList.add('active');
+  sl.querySelectorAll('.au').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+  dotsEl.children[cur-1].classList.add('active');
+  ctr.textContent=cur+' / '+N;
+  prev.disabled=cur===1; next.disabled=cur===N;
+}
+prev.onclick=()=>go(cur-1);
+next.onclick=()=>go(cur+1);
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(cur+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(cur-1);
+});
+</script>
+</body>
+</html>
